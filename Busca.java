@@ -5,7 +5,6 @@ import static java.util.Collections.singletonList;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,23 +17,20 @@ public class Busca {
      * @return o estado final do quebra-cabeça.
      */
     public static Estado amplitude(Estado inicial) {
-        LinkedHashSet<Estado> abertos = new LinkedHashSet<>(singletonList(inicial));
-        LinkedHashSet<Estado> fechados = new LinkedHashSet<>();
+        List<Estado> abertos = new ArrayList<>(singletonList(inicial));
+        List<Estado> fechados = new ArrayList<>();
 
         while (!abertos.isEmpty()) {
-            Estado x = abertos.iterator().next();
-            abertos.remove(x);
+            Estado x = abertos.remove(0);
 
             if (x.isObjetivo()) {
+                System.out.printf("Fim. Estados abertos: %d; Estados fechados: %d\n", abertos.size(), fechados.size());
                 return x;
             } else {
                 Set<Estado> filhos = x.gerarFilhos();
-
                 fechados.add(x);
 
-                filhos.removeAll(abertos);
-                filhos.removeAll(fechados);
-
+                filhos.removeIf(filho -> abertos.contains(filho) || fechados.contains(filho));
                 abertos.addAll(filhos);
             }
         }
@@ -55,6 +51,7 @@ public class Busca {
             Estado x = abertos.remove(0);
 
             if (x.isObjetivo()) {
+                System.out.printf("Fim. Estados abertos: %d; Estados fechados: %d\n", abertos.size(), fechados.size());
                 return x;
             } else {
                 Set<Estado> filhos = x.gerarFilhos();

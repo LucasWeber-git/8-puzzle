@@ -25,15 +25,11 @@ public class Main {
      * @param inicial estado inicial do quebra-cabeça.
      */
     private static void realizaBusca(Function<Estado, Estado> busca, Estado inicial) {
-        long memoriaAntes = getMemoriaUsada();
         long tempoAntes = System.currentTimeMillis();
 
         Estado estadoFinal = busca.apply(inicial);
 
-        long memoriaDepois = getMemoriaUsada();
         long tempoDepois = System.currentTimeMillis();
-
-        long memoriaConsumida = memoriaDepois - memoriaAntes;
         long tempoTotal = tempoDepois - tempoAntes;
 
         if (estadoFinal == null) {
@@ -47,17 +43,7 @@ public class Main {
             System.out.println(e);
         }
 
-        System.out.println("\nTamanho da árvore gerada: " + estadoFinal.getProfundidade());
-        System.out.println("Memória consumida: " + memoriaConsumida + " bytes");
         System.out.println("Tempo: " + tempoTotal + " ms");
-    }
-
-    /**
-     * Retorna a quantidade de memória em uso.
-     */
-    private static long getMemoriaUsada() {
-        Runtime rt = Runtime.getRuntime();
-        return rt.totalMemory() - rt.freeMemory();
     }
 
 }
