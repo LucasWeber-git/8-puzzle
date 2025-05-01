@@ -83,14 +83,6 @@ public class Estado {
         return inversoes % 2 != 0;
     }
 
-    public boolean isObjetivo() {
-        return this.equals(OBJETIVO);
-    }
-
-    public int[][] getTabuleiro() {
-        return tabuleiro;
-    }
-
     /**
      * Gera os filhos deste estado com base nos movimentos possíveis no tabuleiro.
      *
@@ -107,6 +99,37 @@ public class Estado {
             }
         }
         return filhos;
+    }
+
+    /**
+     * Retorna o caminho desde o estado inicial até este estado.
+     *
+     * @return Lista ordenada com o caminho percorrido
+     */
+    public List<Estado> getCaminho() {
+        List<Estado> caminho = new ArrayList<>();
+        Estado proximo = this;
+
+        while (proximo != null) {
+            caminho.add(proximo);
+            proximo = proximo.getPai();
+        }
+
+        Collections.reverse(caminho);
+
+        return caminho;
+    }
+
+    public boolean isObjetivo() {
+        return this.equals(OBJETIVO);
+    }
+
+    public int[][] getTabuleiro() {
+        return tabuleiro;
+    }
+
+    public Estado getPai() {
+        return pai;
     }
 
     /**

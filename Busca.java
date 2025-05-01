@@ -11,22 +11,18 @@ public class Busca {
      * Realiza a busca por amplitude.
      *
      * @param inicial o estado inicial do quebra-cabeça.
-     * @return a quantidade de iterações realizadas.
+     * @return o estado final do quebra-cabeça.
      */
-    public static int amplitude(Estado inicial) {
+    public static Estado amplitude(Estado inicial) {
         LinkedHashSet<Estado> abertos = new LinkedHashSet<>(singletonList(inicial));
         LinkedHashSet<Estado> fechados = new LinkedHashSet<>();
 
-        int i = 0;
         while (!abertos.isEmpty()) {
             Estado x = abertos.iterator().next();
             abertos.remove(x);
 
-            i++;
-            System.out.println(x);
-
             if (x.isObjetivo()) {
-                return i;
+                return x;
             } else {
                 Set<Estado> filhos = x.gerarFilhos();
 
@@ -38,11 +34,17 @@ public class Busca {
                 abertos.addAll(filhos);
             }
         }
-        return -1;
+        return null;
     }
 
-    public static int melhorEscolha(Estado inicial) {
-        return 0;
+    /**
+     * Realiza a busca por melhor escolha.
+     *
+     * @param inicial o estado inicial do quebra-cabeça.
+     * @return o estado final do quebra-cabeça.
+     */
+    public static Estado melhorEscolha(Estado inicial) {
+        return null;
     }
 
 }

@@ -1,5 +1,6 @@
 package br.com.quebra.cabeca;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class Main {
@@ -9,12 +10,12 @@ public class Main {
         System.out.println("Estado inicial: " + inicial + "\n");
 
         System.out.println("Iniciando busca por amplitude\n");
-        disparaBusca(Busca::amplitude, inicial);
+        realizaBusca(Busca::amplitude, inicial);
 
         System.out.println("\n-------------------------------------------------------\n");
 
         System.out.println("Iniciando busca por melhor escolha\n");
-        disparaBusca(Busca::melhorEscolha, inicial);
+        realizaBusca(Busca::melhorEscolha, inicial);
     }
 
     /**
@@ -23,11 +24,11 @@ public class Main {
      * @param busca função de busca.
      * @param inicial estado inicial do quebra-cabeça.
      */
-    private static void disparaBusca(Function<Estado, Integer> busca, Estado inicial) {
+    private static void realizaBusca(Function<Estado, Estado> busca, Estado inicial) {
         long memoriaAntes = getMemoriaUsada();
         long tempoAntes = System.currentTimeMillis();
 
-        Integer iteracoes = busca.apply(inicial);
+        Estado estadoFinal = busca.apply(inicial);
 
         long memoriaDepois = getMemoriaUsada();
         long tempoDepois = System.currentTimeMillis();
@@ -35,7 +36,18 @@ public class Main {
         long memoriaConsumida = memoriaDepois - memoriaAntes;
         long tempoTotal = tempoDepois - tempoAntes;
 
-        System.out.println("\nQuantidade de iterações: " + iteracoes);
+        if (estadoFinal == null) {
+            System.out.println("Erro ao realizar busca.");
+            return;
+        }
+
+        List<Estado> caminho = estadoFinal.getCaminho();
+
+        for (Estado e : caminho) {
+            System.out.println(e);
+        }
+
+        System.out.println("\nTamanho da árvore: " + caminho.size());
         System.out.println("Memória consumida: " + memoriaConsumida + " bytes");
         System.out.println("Tempo: " + tempoTotal + " ms");
     }
