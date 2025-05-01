@@ -6,6 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
         Estado inicial = Estado.geraInicial();
+        System.out.println("Estado inicial: " + inicial + "\n");
 
         System.out.println("Iniciando busca por amplitude\n");
         disparaBusca(Busca::amplitude, inicial);

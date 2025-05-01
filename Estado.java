@@ -3,8 +3,11 @@ package br.com.quebra.cabeca;
 import static br.com.quebra.cabeca.Constantes.DIRECOES;
 import static br.com.quebra.cabeca.Constantes.OBJETIVO;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,16 +34,61 @@ public class Estado {
     }
 
     /**
-     * Gera um estado inicial válido.
+     * Gera um estado inicial resolvível.
      *
      * @return estado inicial.
      */
     public static Estado geraInicial() {
-        return new Estado(new int[][]{{2, 1, 3}, {8, 0, 4}, {7, 5, 6}}, null);
+        List<Integer> pecas = new ArrayList<>();
+
+        for (int i = 0; i < 9; i++) {
+            pecas.add(i);
+        }
+
+        do {
+            Collections.shuffle(pecas);
+        } while (!isResolvivel(pecas.toArray(new Integer[0])));
+
+        int[][] tabInicial = new int[3][3];
+        for (int i = 0; i < 9; i++) {
+            tabInicial[i / 3][i % 3] = pecas.get(i);
+        }
+
+        return new Estado(tabInicial, null);
+    }
+
+    /**
+     * Verifica se o tabuleiro é resolvível.
+     *
+     * @param array tabuleiro em formato linear
+     * @return boolean indicando se é ou não resolvível
+     */
+    public static boolean isResolvivel(Integer[] array) {
+        int inversoes = 0;
+        for (int i = 0; i < 9; i++) {
+            if (array[i] == 0) {
+                continue;
+            }
+
+            for (int j = i + 1; j < 9; j++) {
+                if (array[j] == 0) {
+                    continue;
+                }
+                if (array[i] > array[j]) {
+                    inversoes++;
+                }
+            }
+        }
+
+        return inversoes % 2 != 0;
     }
 
     public boolean isObjetivo() {
         return this.equals(OBJETIVO);
+    }
+
+    public int[][] getTabuleiro() {
+        return tabuleiro;
     }
 
     /**
@@ -59,10 +107,6 @@ public class Estado {
             }
         }
         return filhos;
-    }
-
-    public int[][] getTabuleiro() {
-        return tabuleiro;
     }
 
     /**
@@ -129,7 +173,7 @@ public class Estado {
 
     @Override
     public String toString() {
-        return Arrays.stream(this.tabuleiro)
+        return Arrays.stream(tabuleiro)
             .flatMapToInt(Arrays::stream)
             .mapToObj(String::valueOf)
             .collect(Collectors.joining(",", "[", "]"));
