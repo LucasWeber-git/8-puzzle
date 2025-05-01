@@ -11,17 +11,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Estado {
+public class Estado implements Comparable<Estado> {
 
-    private final Estado pai;
     private final int[][] tabuleiro;
+    private final Estado pai;
 
     private int linhaZero;
     private int colunaZero;
 
+    private int profundidade;
+    private int distanciaHeuristica;
+
     public Estado(int[][] tabuleiro, Estado pai) {
         this.tabuleiro = tabuleiro;
         this.pai = pai;
+        this.profundidade = pai == null ? 0 : (pai.getProfundidade() + 1);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -31,56 +35,6 @@ public class Estado {
                 }
             }
         }
-    }
-
-    /**
-     * Gera um estado inicial resolvível.
-     *
-     * @return estado inicial.
-     */
-    public static Estado geraInicial() {
-        List<Integer> pecas = new ArrayList<>();
-
-        for (int i = 0; i < 9; i++) {
-            pecas.add(i);
-        }
-
-        do {
-            Collections.shuffle(pecas);
-        } while (!isResolvivel(pecas.toArray(new Integer[0])));
-
-        int[][] tabInicial = new int[3][3];
-        for (int i = 0; i < 9; i++) {
-            tabInicial[i / 3][i % 3] = pecas.get(i);
-        }
-
-        return new Estado(tabInicial, null);
-    }
-
-    /**
-     * Verifica se o tabuleiro é resolvível.
-     *
-     * @param array tabuleiro em formato linear
-     * @return boolean indicando se é ou não resolvível
-     */
-    public static boolean isResolvivel(Integer[] array) {
-        int inversoes = 0;
-        for (int i = 0; i < 9; i++) {
-            if (array[i] == 0) {
-                continue;
-            }
-
-            for (int j = i + 1; j < 9; j++) {
-                if (array[j] == 0) {
-                    continue;
-                }
-                if (array[i] > array[j]) {
-                    inversoes++;
-                }
-            }
-        }
-
-        return inversoes % 2 != 0;
     }
 
     /**
@@ -120,6 +74,26 @@ public class Estado {
         return caminho;
     }
 
+    /**
+     * Move o espaço vazio na direção indicada, caso seja um movimento válido.
+     *
+     * @param direcao direção desejada.
+     * @return tabuleiro após a movimentação; null se o movimento for inválido.
+     */
+    private int[][] movePeca(int[] direcao) {
+        int linha = linhaZero + direcao[0];
+        int coluna = colunaZero + direcao[1];
+
+        if (Util.isPosicaoValida(linha, coluna)) {
+            int[][] novoTab = Util.copiarTabuleiro(tabuleiro);
+            novoTab[linhaZero][colunaZero] = novoTab[linha][coluna];
+            novoTab[linha][coluna] = 0;
+
+            return novoTab;
+        }
+        return null;
+    }
+
     public boolean isObjetivo() {
         return this.equals(OBJETIVO);
     }
@@ -132,66 +106,46 @@ public class Estado {
         return pai;
     }
 
-    /**
-     * Move o espaço vazio na direção indicada, caso seja um movimento válido.
-     *
-     * @param direcao direção desejada.
-     * @return tabuleiro após a movimentação; null se o movimento for inválido.
-     */
-    private int[][] movePeca(int[] direcao) {
-        int linha = linhaZero + direcao[0];
-        int coluna = colunaZero + direcao[1];
-
-        if (isPosicaoValida(linha, coluna)) {
-            int[][] novoTab = copiarTabuleiro();
-            novoTab[linhaZero][colunaZero] = novoTab[linha][coluna];
-            novoTab[linha][coluna] = 0;
-
-            return novoTab;
-        }
-        return null;
+    public int getProfundidade() {
+        return profundidade;
     }
 
-    /**
-     * Indica se a posição é válida para o tabuleiro 3x3.
-     *
-     * @param lin linha.
-     * @param col coluna.
-     * @return boolean indicando se a posição é válida.
-     */
-    private boolean isPosicaoValida(int lin, int col) {
-        return lin >= 0 && lin < 3 && col >= 0 && col < 3;
+    public void setProfundidade(int profundidade) {
+        this.profundidade = profundidade;
     }
 
-    /**
-     * Realiza uma cópia profunda do tabuleiro atual.
-     *
-     * @return cópia.
-     */
-    private int[][] copiarTabuleiro() {
-        int[][] novo = new int[3][3];
-        for (int i = 0; i < 3; i++) {
-            novo[i] = tabuleiro[i].clone();
-        }
-        return novo;
+    public int getDistanciaHeuristica() {
+        return distanciaHeuristica;
+    }
+
+    public void setDistanciaHeuristica(int distanciaHeuristica) {
+        this.distanciaHeuristica = distanciaHeuristica;
     }
 
     @Override
-    public boolean equals(final Object other) {
-        if (this == other) {
+    public boolean equals(final Object outro) {
+        if (this == outro) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (outro == null || getClass() != outro.getClass()) {
             return false;
         }
 
-        final Estado estado = (Estado) other;
+        final Estado estado = (Estado) outro;
         return Arrays.deepEquals(tabuleiro, estado.getTabuleiro());
     }
 
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(tabuleiro);
+    }
+
+    @Override
+    public int compareTo(Estado outro) {
+        int pesoEste = this.profundidade + this.distanciaHeuristica;
+        int pesoOutro = outro.getProfundidade() + outro.getDistanciaHeuristica();
+
+        return Integer.compare(pesoEste, pesoOutro);
     }
 
     @Override

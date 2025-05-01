@@ -6,7 +6,7 @@ import java.util.function.Function;
 public class Main {
 
     public static void main(String[] args) {
-        Estado inicial = Estado.geraInicial();
+        Estado inicial = Util.geraInicial();
         System.out.println("Estado inicial: " + inicial + "\n");
 
         System.out.println("Iniciando busca por amplitude\n");
@@ -47,7 +47,7 @@ public class Main {
             System.out.println(e);
         }
 
-        System.out.println("\nTamanho da árvore: " + caminho.size());
+        System.out.println("\nTamanho da árvore gerada: " + estadoFinal.getProfundidade());
         System.out.println("Memória consumida: " + memoriaConsumida + " bytes");
         System.out.println("Tempo: " + tempoTotal + " ms");
     }
