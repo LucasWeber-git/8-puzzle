@@ -9,6 +9,9 @@ public class Constantes {
 
     public static final int[][] DIRECOES = {CIMA, BAIXO, ESQUERDA, DIREITA};
 
+    public static final String HEURISTICA_PECAS_FORA_LUGAR = "HEURISTICA_PECAS_FORA_LUGAR";
+    public static final String HEURISTICA_DISTANCIAS = "HEURISTICA_DISTANCIAS";
+
     public static final Estado OBJETIVO = new Estado(new int[][]{{1, 2, 3}, {8, 0, 4}, {7, 6, 5}}, null);
 
 }
